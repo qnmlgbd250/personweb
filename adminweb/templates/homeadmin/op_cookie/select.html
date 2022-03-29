@@ -1,0 +1,159 @@
+{% extends 'homeadmin/base.html' %}
+
+{% block body_html %}
+{% load static %}
+
+<section class="content-header">
+      <h1>
+            cookie管理
+            <small>后台管理</small>
+      </h1>
+        <ol class="breadcrumb">
+            <li>
+                <a href="#"><i class="fa fa-dashboard"></i> 首页</a>
+            </li>
+            <li class="active">cookie管理</li>
+        </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content container-fluid">
+
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="box">
+            <div class="box-header">
+              <h3 class="box-title" style="margin-top:10px">cookie信息表</h3>
+                <div class="row" >
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body table-responsive" style="margin-top:20px;">
+              <table class="table table-hover" >
+                <div style="margin-top:-30px">
+                    <div style="float:left;">
+                        <ul class="col-xs-3" style="width:100px;margin-left:5px;margin-top:20px">
+                            <input type="hidden" id="csrf_token" value="{{ csrf_token }}">
+                            <button onclick="delsure()" class="btn btn-danger input-lm">批量删除</button>
+                        </ul>
+                    </div>
+                </div>
+                <form action="" method="get" id="searchform">
+                 <div class="col-xs-3" style="width:175px;margin-left:20px;margin-top:20px">
+                  <select type="text" name="status" class="form-control" form="searchform" autofocus>
+                      <option value="">筛选状态搜索</option>
+                      <option value="1">正常</option>
+                      <option value="2">禁用</option>
+                      <option value="9">删除</option>
+                  </select>
+                 </div>
+                    <div class="col-xs-3" style="width:200px;margin-left:20px;margin-top:20px">
+                        <input type="text" name="keyword" class="form-control" placeholder="网站名称/网站账号	">
+                    </div>
+                    <div class="col-xs-3" style="width:100px;height:34px;margin-top:20px">
+                        <button type="submit" class="btn btn-dropbox"><i class="fa fa-search"></i></button>
+                    </div>
+
+                </form>
+                <tr>
+                  <th><input type="checkbox" id="checkAll"  onclick="checkAll()"></th>
+                  <th>ID</th>
+                  <th>网站名称</th>
+                  <th>网站账号</th>
+                  <th>网址</th>
+                  <th>cookie状态</th>
+                  <th>cookie值</th>
+                  <th>更新时间</th>
+                  <th>操作</th>
+                </tr>
+                  {% for vo in user_info %}
+                <tr>
+                  <td><input type="checkbox" onclick="checkOne()" value="{{vo.id}}" name="item"></td>
+                  <td>{{vo.id}}</td>
+                  <td>{{vo.sitename}}</td>
+                  <td>{{vo.username}}</td>
+                  <td>
+                      <a href="{% if 'http' in vo.siteaddress%}{{ vo.siteaddress }}{%else%} http://{{ vo.siteaddress }} {% endif %}" target="_blank">{{vo.siteaddress}}</a>
+                  </td>
+                  <td>
+                      {% if vo.status == 1 %}
+                            <span style="color:green">正常</span>
+                        {% elif vo.status == 2 %}
+                            <span style="color:red">禁用</span>
+                        {% elif vo.status == 9 %}
+                            <span style="color:red">已删除</span>
+                        {% else %}
+                            <span style="color:red">未知状态</span>
+                        {% endif %}
+                  </td>
+                  <td>
+                      <a type="button" onclick="doGetcookie('{{ vo.site_cookie }}','{{ vo.sitename }}')" class="btn btn-info btn-xs">
+                      <span class="glyphicon glyphicon-file" aria-hidden="true"></span> 点击查看cookie</a>
+                  </td>
+                  <td>{{vo.update_at|date:'Y-m-d H:i:s'}}</td>
+                  <td>
+                    <a type="button" href="{% url 'edit_cookie' vo.id  %}" class="btn btn-success btn-xs">
+                      <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑</a>
+                    <button type="button" onclick="doDel('{% url "del_cookie" vo.id  %}')" class="btn btn-danger btn-xs">
+                      <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> 删除</button>
+                    <button type="button" onclick="delete1(this)" class="btn btn-primary btn-xs">
+                      <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> 隐藏</button>
+
+                  </td>
+                </tr>
+                  {% endfor %}
+
+              </table>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer clearfix">
+              <a role="button" href="{% url 'add_cookie' %}" class="btn btn-primary">
+                      <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>添加cookie信息
+              </a>
+            <div>
+
+            </div>
+
+
+
+
+              <ul class="pagination pagination-sm no-margin pull-right">
+                <li><a href="{% url 'select_site' page|add:-1 per_page %}?{{ mywhere|join:'&'}}">&laquo;</a></li>
+                {% for p in page_list %}
+                <li {% if p == page %}class="active"{% endif %}><a href="{% url 'select_site' p per_page %}?{{ mywhere|join:'&'}}">{{p}}</a></li>
+                {% endfor %}
+                <li><a href="{% url 'select_site' page|add:1 per_page %}?{{ mywhere|join:'&'}}">&raquo;</a></li>
+              </ul>
+            </div>
+          </div>
+          <!-- /.box -->
+        </div>
+      </div>
+      </div>
+     <script type="text/javascript">
+	function doGetcookie(site_cookie,sitename) {
+        Modal.confirm({
+            msg: site_cookie,
+            title: sitename + 'cookie信息',
+            btnok: '确定',
+            btncl: '取消',
+        });
+    }
+    function delete1(obj){
+    var tr=obj.parentNode.parentNode;
+    var tbody=tr.parentNode;
+    tbody.removeChild(tr);
+}
+    //使用Jquery 删除
+    function delete2(obj){
+        $(obj).parent().parent().parent()[0].removeChild($(obj).parent().parent()[0]);
+    }
+    //该方式只是将TR 元素隐藏
+    function hide(obj){
+        $(obj).parent().parent().hide();
+}
+    </script>
+<script src="{% static 'homeadmin/dist/js/curd.js' %}"></script>
+
+
+</section>
+{% endblock %}

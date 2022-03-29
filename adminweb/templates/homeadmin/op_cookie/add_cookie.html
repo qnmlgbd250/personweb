@@ -1,0 +1,135 @@
+{% extends 'homeadmin/base.html' %}
+
+{% block body_html %}
+<section class="content-header">
+      <h1>
+        cookie管理
+        <small>后台管理</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> 首页</a></li>
+        <li class="active">cookie管理</li>
+      </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content container-fluid">
+
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="box">
+            <div class="box-header">
+                <h2 class="box-title"> <span class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></span>添加cookie信息</h2>
+            </div>
+            <!-- /.box-header -->
+            <!-- form start -->
+            <form class="form-horizontal" action="{% url 'insert_cookie' %}" method="post" style="text-align:justify; text-justify:inter-ideograph;">
+                {% csrf_token %}
+              <div class="box-body">
+                  <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label" >网站名：</label>
+                      <span style="color:red">* </span>
+                    <div class="col-sm-4">
+                        <input type="text" name="sitename" class="form-control" id="inputEmail3" placeholder="网站名" required>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">网站地址：</label>
+                      <span style="color:red">* </span>
+                    <div class="col-sm-4">
+                        <input type="text" name="siteaddress" class="form-control" id="inputEmail3" placeholder="网站地址" required>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">网站账号：</label>
+                      <span style="color:red">* </span>
+                    <div class="col-sm-4">
+                        <input type="text" name="username" class="form-control" id="inputEmail3" placeholder="网站账号" required>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">网站cookie：</label>
+                      <span style="color:red">* </span>
+                    <div class="col-sm-4">
+                        <input type="text" name="site_cookie" class="form-control" id="inputEmail3" placeholder="网站cookie" required>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                  <label for="text" class="col-sm-2 control-label">密码：</label>
+                      <span style="color:red">* </span>
+
+                  <div class="col-sm-4">
+                    <input type="password" name="password" id="pw" class="form-control" required>
+                  </div>
+                </div>
+
+                  <div class="form-group">
+                  <label for="text" class="col-sm-2 control-label">重复密码：</label>
+                      <span style="color:red">* </span>
+
+                  <div class="col-sm-4">
+                    <input type="password" name="repassword" id="rpw" class="form-control" required onkeyup="checkpassword()">
+                      <span id="tishi"></span>
+                      </input>
+                  </div>
+                </div>
+              </div>
+              <!-- /.box-body -->
+              <div class="box-footer">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button type="submit"  id="subt" class="btn btn-primary">提交</button> &nbsp;
+                  <button type="reset" class="btn btn-default">重置</button> &nbsp;
+                  <a type="button" href="{% url 'select_site' page=1 per_page=10  %}" class="btn btn-default">返回</a>
+                 </div>
+              </div>
+
+
+              <!-- /.box-footer -->
+            </form>
+          </div>
+          <!-- /.box -->
+        </div>
+      </div>
+
+<script type="text/javascript">
+    	function checkpassword() {
+    		var password = document.getElementById("pw").value;
+    		var repassword = document.getElementById("rpw").value;
+
+    		if(password !== repassword) {
+                 document.getElementById("tishi").innerHTML='<br><span style="color:red">密码不一致</span></<br>';
+	    		 document.getElementById("subt").disabled = true;
+			 }else {
+                 document.getElementById("tishi").innerHTML='<span></span>';
+    			 document.getElementById("subt").disabled = false;
+			 }
+
+    	}
+        var info_ = '{{ info }}'
+        var ensure = "{% url 'select_site' page=1 per_page=10 %}"
+        function infoWindow() {
+            Modal.confirm({
+                msg: info_,
+                title: '操作提示',
+                btnok: '继续添加',
+                btncl: '返回',
+            }).on(function (e) {
+            if (e) {
+                window.location.href=url;
+            }
+                else{
+                window.location.href=ensure;
+            }
+        });
+        }
+        if(info_ !== ''){window.onload = infoWindow}
+
+    </script>
+    </section>
+
+
+{% endblock %}

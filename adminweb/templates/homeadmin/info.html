@@ -1,0 +1,21 @@
+{% extends 'homeadmin/base.html' %}
+
+{% block body_html %}
+    <script type="text/javascript">
+	function infoWindow() {
+        var info_ = '{{ info }}'
+        var ensure = "{% url 'select_site' page=1 per_page=10 %}"
+        Modal.confirm({
+            msg: info_,
+            title: '操作提示',
+            btnok: '确认',
+            btncl: '取消',
+        }).on(function (e) {
+            if (e) {
+                window.location.href=ensure;
+            }
+        });
+    }
+    window.onload = infoWindow
+    </script>
+{% endblock %}

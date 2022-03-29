@@ -1,0 +1,107 @@
+{% load static %}
+    <!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>AdminLTE 2 | Starter</title>
+  <!-- 支持响应式布局 -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <link rel="stylesheet" href="{% static 'homeadmin/bower_components/bootstrap/dist/css/bootstrap.min.css'%}">
+  <!-- 象形字体 -->
+  <link rel="stylesheet" href="{% static 'homeadmin/bower_components/font-awesome/css/font-awesome.min.css'%}">
+  <!-- 图标 -->
+  <link rel="stylesheet" href="{% static 'homeadmin/bower_components/Ionicons/css/ionicons.min.css'%}">
+  <!-- 主题风格样式 -->
+  <link rel="stylesheet" href="{% static 'homeadmin/dist/css/AdminLTE.min.css'%}">
+  <!-- AdminLTE 皮肤.这里选择的是skin-blue样式，我们还可以有其他皮肤可以选择. -->
+  <link rel="stylesheet" href="{% static 'homeadmin/dist/css/skins/skin-blue.min.css'%}">
+  <!-- 兼容IE9以下浏览器 -->
+  <link rel="stylesheet" href="{% static 'verify/css/verify.css'%}">
+  <script type="text/javascript" src="{% static 'verify/js/jquery-1.11.0.min.js'%}"></script>
+  <script type="text/javascript" src="{% static 'verify/js/verify.js' %}"></script>
+  <!--[if lt IE 9]>
+  <script src="{% static 'homeadmin/local/js/html5shiv.min.js'%}"></script>
+  <script src="{% static 'homeadmin/local/js/respond.min.js'%}"></script>
+  <![endif]-->
+  <!-- Google Font -->
+  <link rel="stylesheet" href="{% static 'homeadmin/local/css/google_fonts.css'%}">
+</head>
+<body class="hold-transition login-page">
+<div class="login-box">
+  <div class="login-logo">
+    <a href="index2.html"><b>注册信息填写</b></a>
+  </div>
+  <!-- /.login-logo -->
+  <div class="login-box-body">
+    <p class="login-box-msg" style="color:red">{{ info }}</p>
+
+    <form action="{% url 'doregister' %}" method="post">
+        {% csrf_token %}
+      <div class="form-group has-feedback">
+        <input type="text" name = "username" class="form-control" required placeholder="账号">
+        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input type="password" id="pw" name="password" class="form-control" placeholder="密码">
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+      </div>
+        <div class="form-group has-feedback">
+        <input type="password" id="rpw" name="password1" class="form-control" required onkeyup="registercheckpassword()" placeholder="重复密码">
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+            <span id="tishi"></span>
+        <div class="form-group has-feedback">
+        <input type="text" name="code" class="form-control" style="width:150px;margin-top:15px" placeholder="验证码">
+
+        <div>
+            <img  src="{% url 'verify' %}" id="codeImg" onclick="getCode()" style="margin-top:15px;width:150px"/>
+        </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <button type="submit" id="subt" class="btn btn-primary btn-block btn-flat" style="margin-top:15px">注册</button>
+        </div>
+        <div class="col-xs-12">
+          <a type="button" style="margin-top:15px" href="{% url 'login' %}" class="btn btn-primary btn-block btn-flat">已有账号 去登陆</a>
+        </div>
+
+      </div>
+        </div>
+        </div>
+    </form>
+
+  </div>
+  <!-- /.login-box-body -->
+</div>
+<!-- /.login-box -->
+
+<!-- jQuery 3 -->
+<script src="{% static 'homeadmin/bower_components/jquery/dist/jquery.min.js'%}"></script>
+<!-- Bootstrap 3.3.7 -->
+<script src="{% static 'homeadmin/bower_components/bootstrap/dist/js/bootstrap.min.js'%}"></script>
+<!-- iCheck -->
+
+    <script type="text/javascript">
+            function registercheckpassword() {
+                var password = document.getElementById("pw").value;
+                var repassword = document.getElementById("rpw").value;
+
+                if(password !== repassword) {
+                     document.getElementById("tishi").innerHTML='<br><span style="color:red">密码不一致</span></<br>';
+                     document.getElementById("subt").disabled = true;
+                 }else {
+                     document.getElementById("tishi").innerHTML='<span></span>';
+                     document.getElementById("subt").disabled = false;
+                 }
+            }
+             function getCode(){
+            $("#codeImg").attr("src","{% url 'verify' %}" + '?date=' +new Date().getTime());
+
+        }
+
+
+    </script>
+
+</body>
+</html>
+
+
