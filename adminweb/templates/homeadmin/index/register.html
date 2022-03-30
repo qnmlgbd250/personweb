@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>AdminLTE 2 | Starter</title>
+  <title>用户注册</title>
   <!-- 支持响应式布局 -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <link rel="stylesheet" href="{% static 'homeadmin/bower_components/bootstrap/dist/css/bootstrap.min.css'%}">
@@ -39,12 +39,14 @@
     <form action="{% url 'doregister' %}" method="post">
         {% csrf_token %}
       <div class="form-group has-feedback">
-        <input type="text" name = "username" class="form-control" required placeholder="账号">
+        <input type="text" name = "account" class="form-control" required placeholder="账号">
         <span class="glyphicon glyphicon-user form-control-feedback"></span>
       </div>
       <div class="form-group has-feedback">
-        <input type="password" id="pw" name="password" class="form-control" placeholder="密码">
+        <input type="password" id="pw" name="password" class="form-control" onkeyup="checkLength()" placeholder="密码">
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+          <span id="checkpw"></span>
+
       </div>
         <div class="form-group has-feedback">
         <input type="password" id="rpw" name="password1" class="form-control" required onkeyup="registercheckpassword()" placeholder="重复密码">
@@ -81,6 +83,18 @@
 <!-- iCheck -->
 
     <script type="text/javascript">
+            function checkLength(){
+
+                var passwordcheck=document.getElementById("pw").value;
+
+                if(passwordcheck.length<6){
+                     document.getElementById("checkpw").innerHTML='<br><span style="color:red">密码不可小于6位</span></<br>';
+                     document.getElementById("subt").disabled = true;
+                 }else {
+                     document.getElementById("checkpw").innerHTML='<span></span>';
+                     document.getElementById("subt").disabled = false;
+                 }
+            }
             function registercheckpassword() {
                 var password = document.getElementById("pw").value;
                 var repassword = document.getElementById("rpw").value;
@@ -93,8 +107,9 @@
                      document.getElementById("subt").disabled = false;
                  }
             }
-             function getCode(){
-            $("#codeImg").attr("src","{% url 'verify' %}" + '?date=' +new Date().getTime());
+            function getCode(){
+                $("#codeImg").attr("src","{% url 'verify' %}" + '?date=' +new Date().getTime());
+
 
         }
 

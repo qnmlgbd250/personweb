@@ -2,9 +2,11 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.db.models import Q
 
 from datetime import datetime
 import time
+import re
 
 from io import BytesIO
 
@@ -24,23 +26,50 @@ def register(request):
 # 执行注册
 def doregister(request):
     try:
-        if request.POST.get('code') != request.session['verifycode']:
-            context = {"info": '验证码错误'}
-            return render(request, 'homeadmin/index/register.html', context)
+        # if request.POST.get('code') != request.session['verifycode']:
+        #     context = {"info": '验证码错误'}
+        #     return render(request, 'homeadmin/index/register.html', context)
         ob = User()
-        ob.username = request.POST.get('username')
-        import hashlib
-        md5 = hashlib.md5()
-        n = int(time.time())
-        s = request.POST['password'] + str(n)  # 从表单中获取密码并添加干扰值
-        md5.update(s.encode('utf-8'))  # 将要产生md5的子串放进去
-        ob.password_hash = md5.hexdigest()  # 获取md5值
-        ob.password_salt = n
-        ob.status = 1
-        ob.create_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        ob.update_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        ob.save()
-        context = {'info': '注册成功'}
+        account = request.POST.get('account','')
+        phone_type = False
+        email_type = False
+        if re.match('^1[3-9]\d{9}$', account):
+            phone_type = True
+        if re.match('^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', account):
+            email_type = True
+        try:
+            if User.objects.get(Q(username = account) | Q(email = account) | Q(phone_number = account)):
+                if phone_type:
+                    context = {"info": '该手机号已注册'}
+                elif email_type:
+                    context = {"info": '该邮箱已注册'}
+                else:
+                    context = {"info": '用户名被占用 请更换'}
+                return render(request, 'homeadmin/index/register.html', context)
+        except Exception as e:
+            if str(e) in ['User matching query does not exist.']:
+                # 使用正则验证
+                if phone_type:
+                    ob.phone_number = account
+                elif email_type:
+                    ob.email = account
+                else:
+                    ob.username = account
+                import hashlib
+                md5 = hashlib.md5()
+                n = int(time.time())
+                s = request.POST['password'] + str(n)  # 从表单中获取密码并添加干扰值
+                md5.update(s.encode('utf-8'))  # 将要产生md5的子串放进去
+                ob.password_hash = md5.hexdigest()  # 获取md5值
+                ob.password_salt = n
+                ob.status = 1
+                ob.create_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                ob.update_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                ob.save()
+                context = {'info': '注册成功'}
+            else:
+                context = {'info': '注册失败数据库崩溃'}
+                return render(request, 'homeadmin/index/register.html', context)
 
     except Exception as e:
         print(e)
@@ -57,11 +86,22 @@ def login(request):
 def dologin(request):
     try:
         # 执行验证码的校验
-        if request.POST.get('code') != request.session['verifycode']:
-            context = {"info": '验证码错误'}
-            return render(request, 'homeadmin/index/login.html', context)
+        # if request.POST.get('code') != request.session['verifycode']:
+        #     context = {"info": '验证码错误'}
+        #     return render(request, 'homeadmin/index/login.html', context)
+
         # 根据登录账号获取登录者的信息
-        user = User.objects.get(username = request.POST.get('username'))
+        account = request.POST.get('account')
+        # 使用Q方法验证
+        user = User.objects.get(Q(username = account) | Q(email = account) | Q(phone_number = account))
+        # 使用正则验证
+        # if re.match('^1[3-9]\d{9}$', account):
+        #     user = User.objects.get(phone_number = account)
+        # elif re.match('^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', account):
+        #     user = User.objects.get(email = account)
+        # else:
+        #     user = User.objects.get(username = account)
+
         # 判断当前对象是不是管理员
         if user.status == 1:
             # 判断密码是否相等
@@ -148,5 +188,3 @@ def verify(request):
     im.save(buf, 'png')
     # 将内存中的图片数据返回给客户端，MIME类型为图片png
     return HttpResponse(buf.getvalue(), 'image/png')
-
-

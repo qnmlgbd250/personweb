@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>AdminLTE 2 | Starter</title>
+  <title>用户登录</title>
   <!-- 支持响应式布局 -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <link rel="stylesheet" href="{% static 'homeadmin/bower_components/bootstrap/dist/css/bootstrap.min.css'%}">
@@ -36,7 +36,7 @@
     <form action="{% url 'dologin' %}" method="post">
         {% csrf_token %}
       <div class="form-group has-feedback">
-        <input type="text" name = "username" class="form-control" placeholder="账号">
+        <input type="text" name = "account" class="form-control" placeholder="用户名/手机号/邮箱">
         <span class="glyphicon glyphicon-user form-control-feedback"></span>
       </div>
       <div class="form-group has-feedback">
