@@ -9,7 +9,7 @@ from ..models import Site_Cookie
 
 
 def select_site(request, page = 1,per_page = 10):
-    cookie_ob = Site_Cookie.objects.all()
+    cookie_ob = Site_Cookie.objects.filter(userid = request.session['adminuser']['id'])
 
 
     # 获取并判断关键字搜索条件
@@ -84,6 +84,7 @@ def insert_cookie(request):
         ob.siteaddress = request.POST.get('siteaddress')
         ob.username = request.POST.get('username')
         ob.site_cookie = request.POST.get('site_cookie')
+        ob.userid = request.session['adminuser']['id']
         # 将当前员工的密码做md5处理
         import hashlib
         md5 = hashlib.md5()

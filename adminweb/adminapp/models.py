@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import datetime
 
+
 class Base(models.Model):
     create_at = models.DateTimeField(default = datetime.now)  # 创建时间
     update_at = models.DateTimeField(default = datetime.now)  # 修改时间
@@ -8,8 +9,10 @@ class Base(models.Model):
     class Meta:
         abstract = True
 
+
 # 网站cookie模型
 class Site_Cookie(Base):
+    userid = models.CharField(max_length = 32, verbose_name = '用户ID',default = '1')
     sitename = models.CharField(max_length = 50)  # 网站名
     siteaddress = models.CharField(max_length = 150)  # 网站地址
     username = models.CharField(max_length = 150)  # 网站用户名
@@ -18,9 +21,9 @@ class Site_Cookie(Base):
     site_cookie = models.CharField(max_length = 500)  # 网站cookie值
     status = models.IntegerField(default = 1)  # 状态:1正常/2禁用/9删除
 
-
     def toDict(self):
-        return {'id': self.id, 'sitename': self.sitename, 'siteaddress': self.siteaddress, 'username': self.username,
+        return {'id': self.id, 'userid': self.userid, 'sitename': self.sitename, 'siteaddress': self.siteaddress,
+                'username': self.username,
                 'password_hash': self.password_hash, 'password_salt': self.password_salt,
                 'site_cookie': self.site_cookie,
                 'create_at': self.create_at.strftime('%Y-%m-%d %H:%M:%S'),
